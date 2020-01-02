@@ -1,0 +1,83 @@
+package com.example.demo.web;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.entity.Fabric;
+import com.example.demo.repository.FabricRepository;
+
+
+@RestController
+public class FabricController {
+
+	@Autowired
+	private FabricRepository fabricRepository;
+	
+	@RequestMapping(value="/fabric", method = RequestMethod.POST)
+	public ResponseEntity<Fabric> addFabric(@RequestBody Fabric fabric){
+		fabricRepository.save(fabric);
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value="/fabric/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Fabric> findById(@PathVariable Long id){
+		Optional<Fabric> fabricOpt = fabricRepository.findById(id);
+		if(fabricOpt.isPresent()) {
+			return new ResponseEntity<>(fabricOpt.get(), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	@RequestMapping(value="/fabric/{brand}", method = RequestMethod.GET)
+	public ResponseEntity<List<Fabric>> findByBrand(@PathVariable String brand){
+		if(brand == null || brand.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		List<Fabric> fabrics = fabricRepository.findByBrand(brand);
+		return new ResponseEntity<>(fabrics, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/fabric/bybrand/{brand}/bycolour/{colour}", method = RequestMethod.GET)
+	public ResponseEntity<List<Fabric>> findByBrandAndColour(@PathVariable String brand, @PathVariable String colour){
+		if(brand == null || brand.isEmpty() || colour == null || colour.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		List<Fabric> fabrics = fabricRepository.findByBrandAndColour(brand, colour);
+		return new ResponseEntity<>(fabrics, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/fabric", method = RequestMethod.PUT)
+	public ResponseEntity<Fabric> updateFabric(@RequestBody Fabric fabric) {
+		if(fabric.getId() == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		Optional<Fabric> fabricOpt = fabricRepository.findById(fabric.getId());
+		if(!fabricOpt.isPresent()) {
+			return new ResponseEntity<Fabric>(HttpStatus.BAD_REQUEST);
+		}
+		Fabric updatedRecord = fabricRepository.save(fabric);
+		return new ResponseEntity<>(updatedRecord, HttpStatus.ACCEPTED);
+	}
+	
+	@RequestMapping(value="/fabric", method = RequestMethod.DELETE)
+	public ResponseEntity<Fabric> deleteFabric(@RequestBody Fabric fabric) {
+		if(fabric.getId() == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		Optional<Fabric> fabricOpt = fabricRepository.findById(fabric.getId());
+		if(!fabricOpt.isPresent()) {
+			return new ResponseEntity<Fabric>(HttpStatus.BAD_REQUEST);
+		}
+		fabricRepository.delete(fabric);
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+	}
+}

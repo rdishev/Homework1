@@ -1,0 +1,15 @@
+package com.example.demo.web;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.demo.repository.WarehouseRepository;
+
+public class WarehouseController {
+
+	@Autowired
+	private WarehouseRepository warehouseRepository;
+	
+	@RequestMapping(value="/warehouse", method = RequestMethod.POST){
+		
+	}
+}

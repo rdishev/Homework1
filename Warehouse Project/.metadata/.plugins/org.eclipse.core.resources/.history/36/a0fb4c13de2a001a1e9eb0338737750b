@@ -1,0 +1,14 @@
+package com.example.demo.repository;
+
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.example.demo.entity.Goods;
+
+public interface GoodsRepository extends CrudRepository<Goods, Long> {
+
+	List<Goods> findByOrder(String ordercode);
+	List<Goods> findByType(String type);
+	List<Goods> findByOrderAndType(String ordercode, String type);
+}

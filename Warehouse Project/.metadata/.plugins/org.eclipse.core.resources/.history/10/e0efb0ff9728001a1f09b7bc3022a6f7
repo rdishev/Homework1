@@ -1,0 +1,38 @@
+package com.example.demo.web;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.entity.Fabric;
+import com.example.demo.repository.FabricRepository;
+
+
+@RestController
+public class FabricController {
+
+	@Autowired
+	private FabricRepository fabricRepository;
+	
+	@RequestMapping(value="/fabric", method = RequestMethod.POST)
+	public ResponseEntity<Fabric> addFabric(@RequestBody Fabric fabric){
+		fabricRepository.save(fabric);
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value="/fabric/{brand}", method = RequestMethod.GET)
+	public ResponseEntity<List<Fabric>> findByBrand(@PathVariable String brand){
+		if(brand == null || brand.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		List<Fabric> fabrics = fabricRepository.findByBrand(brand);
+		return new ResponseEntity<>(fabrics, HttpStatus.OK);
+	}
+}
